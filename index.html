@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form: Mobile Comp</title>
+    <link rel="stylesheet" href="style.css">
+    <script defer rel="script" src="index.js"></script>
+</head>
+<body>
+    <div class="package-container">
+        <video width="100%" z-index="1" autoplay muted plays-inline loop id="background-video">
+            <source src="images/arona.mp4" type="video/mp4">
+        </video>
+        <button type="button" class="open-form">
+            <span class="button-top">Register Yourself</span>
+        </button>
+    </div>
+    <div id="register-popup" class="popup">
+        <button type="button" class="popup-close" id="popup-close" aria-label="Close">&times;</button>
+        <header class="form-title" id="title">
+            <h2>- Register Form -</h2>
+        </header>
+        <form id="register-form" class="register-form" novalidate>
+            <div class="form-scroll">
+                <div class="form-row">
+                    <div class="form-group icon-user">
+                        <input type="text" id="firstName" name="firstName" placeholder="First Name" autocomplete="given-name">
+                        <span class="error-message"></span>
+                    </div>
+                    <div class="form-group icon-user">
+                        <input type="text" id="lastName" name="lastName" placeholder="Last Name" autocomplete="family-name">
+                        <span class="error-message"></span>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group icon-user">
+                        <input type="text" id="username" name="username" placeholder="Username" autocomplete="username">
+                        <span class="error-message"></span>
+                    </div>
+                    <div class="form-group icon-phone">
+                        <input type="tel" id="phone" name="phone" placeholder="Phone Number" autocomplete="tel">
+                        <span class="error-message"></span>
+                    </div>
+                </div>
+
+                <div class="form-row single">
+                    <div class="form-group icon-mail">
+                        <input type="email" id="email" name="email" placeholder="Your E-Mail Address" autocomplete="email">
+                        <span class="error-message"></span>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <select id="gender" name="gender">
+                            <option value="" disabled selected>Gender</option>
+                            <option value="female">Female</option>
+                            <option value="male">Male</option>
+                            <option value="other">Other</option>
+                            <option value="prefer-not">Prefer not to say</option>
+                        </select>
+                        <span class="error-message"></span>
+                    </div>
+                    <div class="form-group icon-cake">
+                        <input type="text" id="dob" name="dob" placeholder="Date Of Birth : DD/MM/YY" maxlength="8">
+                        <span class="error-message"></span>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <select id="country" name="country">
+                            <option value="" disabled selected>Country</option>
+                        </select>
+                        <span class="error-message"></span>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="company" name="company" placeholder="Your Company's Name" autocomplete="organization">
+                        <span class="error-message"></span>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group icon-address">
+                        <textarea id="homeAddress" name="homeAddress" placeholder="Home Address" rows="3"></textarea>
+                        <span class="error-message"></span>
+                    </div>
+                    <div class="form-group icon-address">
+                        <textarea id="officeAddress" name="officeAddress" placeholder="Office Address" rows="3"></textarea>
+                        <span class="error-message"></span>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group icon-lock">
+                        <input type="password" id="password" name="password" placeholder="Password" autocomplete="new-password">
+                        <span class="error-message"></span>
+                    </div>
+                    <div class="form-group icon-lock">
+                        <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm Password" autocomplete="new-password">
+                        <span class="error-message"></span>
+                    </div>
+                </div>
+
+                <label class="checkbox-row">
+                    <input type="checkbox" id="terms" name="terms">
+                    <span>I agree with the terms &amp; conditions.</span>
+                </label>
+                <span class="error-message" id="terms-error"></span>
+
+                <label class="checkbox-row">
+                    <input type="checkbox" id="offers" name="offers">
+                    <span>Receive best offers and updates.</span>
+                </label>
+
+                <p class="form-status" id="form-status" role="alert"></p>
+
+                <button type="submit" class="register-submit">
+                    <span class="button-top">Register</span>
+                </button>
+
+                <p class="login-link">Already have an account? <a href="#" id="login-link">Login</a></p>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
