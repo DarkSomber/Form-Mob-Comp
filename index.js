@@ -3,20 +3,36 @@ const popup = document.getElementById('register-popup');
 const packageBackground = document.querySelector('.package-container')
 const closeBtn = document.getElementById('popup-close');
 const allPopups = document.querySelectorAll('.popup');
-
+const textHook = document.querySelector('.package-hook')
+const termsPopup = document.getElementById('terms-popup');
+const termsCloseBtn = document.getElementById('terms-close');
+const termsScrollArea = document.getElementById('terms-scroll-area');
+const acceptTermsBtn = document.getElementById('accept-terms-btn');
+const termsCheckbox = document.getElementById('terms');
+const termsTextSpan = document.querySelector('input#terms + span');
+const notAcceptTermsBtn = document.getElementById('not-accept-terms-btn');
 
 function openPopup() {
     popup.classList.add('active');
-    registerBut.classList.add('active')
+    registerBut.classList.add('active');
+    textHook.classList.add('active');
     packageBackground.style.opacity = 0.7;
     registerBut.style.opacity = 0;
+    textHook.style.opacity = 0;
+
+    const submitBtn = form.querySelector('.register-submit');
+    if (submitBtn) submitBtn.style.display = 'block';
+    formStatus.textContent = '';
+    formStatus.className = 'form-status';
 }
 
 function closePopup() {
     popup.classList.remove('active');
     registerBut.classList.remove('active');
+    textHook.classList.add('active')
     packageBackground.style.opacity = 1;
     registerBut.style.opacity = 1;
+    textHook.style.opacity = 1;
 }
 
 registerBut.addEventListener('click', openPopup);
@@ -33,7 +49,7 @@ document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && popup.classList.contains('active')) closePopup();
 });
  
-/* ---------- Registration form validation ---------- */
+/* Registration form validation*/
 const form = document.getElementById('register-form');
 const formStatus = document.getElementById('form-status');
  
@@ -53,12 +69,43 @@ const countryList = [
         select.appendChild(opt);
     });
 })();
+
+(function populateDob() {
+    const daySelect = document.getElementById('dobDay');
+    const monthSelect = document.getElementById('dobMonth');
+    const yearSelect = document.getElementById('dobYear');
+
+    for (let d = 1; d <= 31; d++) {
+        const opt = document.createElement('option');
+        opt.value = String(d).padStart(2, '0');
+        opt.textContent = d;
+        daySelect.appendChild(opt);
+    }
+
+    const months = [
+        'Jan', 'Feb', 'Mar', 'Apr', 'May', 'June',
+        'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec',
+    ];
+    months.forEach((name, i) => {
+        const opt = document.createElement('option');
+        opt.value = String(i + 1).padStart(2, '0');
+        opt.textContent = name;
+        monthSelect.appendChild(opt);
+    });
+
+    const currentYear = new Date().getFullYear();
+    for (let y = currentYear; y >= currentYear - 100; y--) {
+        const opt = document.createElement('option');
+        opt.value = String(y);
+        opt.textContent = y;
+        yearSelect.appendChild(opt);
+    }
+})();
  
 const NAME_RE = /^[A-Za-z' -]{2,40}$/;
 const USERNAME_RE = /^[A-Za-z0-9_]{3,20}$/;
 const PHONE_RE = /^\+?[0-9]{7,15}$/;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const DOB_RE = /^(\d{2})\/(\d{2})\/(\d{2})$/;
 const PASSWORD_RE = /^(?=.*[A-Za-z])(?=.*\d).{8,}$/;
  
 function isRealDate(day, month, year) {
@@ -66,31 +113,49 @@ function isRealDate(day, month, year) {
     return d.getFullYear() === year && d.getMonth() === month - 1 && d.getDate() === day;
 }
  
-function validateDob(value) {
-    const match = value.match(DOB_RE);
-    if (!match) return 'Use the format DD/MM/YY';
-    const day = parseInt(match[1], 10);
-    const month = parseInt(match[2], 10);
-    const twoDigitYear = parseInt(match[3], 10);
-    const currentTwoDigitYear = new Date().getFullYear() % 100;
-    const century = twoDigitYear > currentTwoDigitYear + 5 ? 1900 : 2000;
-    const year = century + twoDigitYear;
+function validateDobFields() {
+    const day = document.getElementById('dobDay').value;
+    const month = document.getElementById('dobMonth').value;
+    const year = document.getElementById('dobYear').value;
+    const group = document.querySelector('.dob-group');
+    const errEl = document.getElementById('dob-error');
  
-    if (month < 1 || month > 12) return 'Month must be between 01 and 12';
-    if (day < 1 || day > 31) return 'Day must be between 01 and 31';
-    if (!isRealDate(day, month, year)) return 'That date does not exist';
+    let message = '';
+    if (!day || !month || !year) {
+        message = 'Please select your full date of birth';
+    } else {
+        const d = parseInt(day, 10);
+        const m = parseInt(month, 10);
+        const y = parseInt(year, 10);
+        if (!isRealDate(d, m, y)) {
+            message = 'That date does not exist';
+        } else {
+            const dob = new Date(y, m - 1, d);
+            const today = new Date();
+            if (dob > today) {
+                message = 'Date of birth cannot be in the future';
+            } else {
+                let age = today.getFullYear() - dob.getFullYear();
+                const monthDiff = today.getMonth() - dob.getMonth();
+                if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) age--;
+                if (age < 13) message = 'You must be at least 13 years old';
+            }
+        }
+    }
  
-    const dob = new Date(year, month - 1, day);
-    const today = new Date();
-    if (dob > today) return 'Date of birth cannot be in the future';
- 
-    let age = today.getFullYear() - dob.getFullYear();
-    const monthDiff = today.getMonth() - dob.getMonth();
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) age--;
-    if (age < 13) return 'You must be at least 13 years old';
- 
-    return '';
+    if (group) group.classList.toggle('invalid', Boolean(message));
+    if (errEl) errEl.textContent = message;
+    return !message;
 }
+ 
+['dobDay', 'dobMonth', 'dobYear'].forEach((id) => {
+    const select = document.getElementById(id);
+    select.addEventListener('blur', validateDobFields);
+    select.addEventListener('change', () => {
+        const group = document.querySelector('.dob-group');
+        if (group && group.classList.contains('invalid')) validateDobFields();
+    });
+});
  
 const validators = {
     firstName: (v) => {
@@ -119,14 +184,7 @@ const validators = {
         return '';
     },
     gender: (v) => (!v ? 'Please select a gender' : ''),
-    dob: (v) => {
-        if (!v.trim()) return 'Date of birth is required';
-        return validateDob(v.trim());
-    },
     country: (v) => (!v ? 'Please select a country' : ''),
-    company: () => '',
-    homeAddress: (v) => (!v.trim() ? 'Home address is required' : ''),
-    officeAddress: () => '',
     password: (v) => {
         if (!v) return 'Password is required';
         if (!PASSWORD_RE.test(v)) return 'Min 8 characters, with at least one letter and one number';
@@ -193,9 +251,10 @@ form.addEventListener('submit', (e) => {
     const fieldsValid = Object.keys(validators)
         .map(validateField)
         .every(Boolean);
+    const dobValid = validateDobFields();
     const termsValid = validateTerms();
  
-    if (!fieldsValid || !termsValid) {
+    if (!fieldsValid || !dobValid || !termsValid) {
         formStatus.textContent = 'Please fix the highlighted fields before continuing.';
         formStatus.classList.add('error');
         const firstInvalid = form.querySelector('.invalid input, .invalid select, .invalid textarea')
@@ -204,8 +263,53 @@ form.addEventListener('submit', (e) => {
         return;
     }
  
-    formStatus.textContent = 'Registration successful! You can now log in.';
+    // SUCCESS STATE
+    formStatus.textContent = '🎉 Registration successful! You can now log in.';
     formStatus.classList.add('success');
+    
+    // Hide the register submit button completely
+    const submitBtn = form.querySelector('.register-submit');
+    if (submitBtn) {
+        submitBtn.style.display = 'none';
+    }
+
     form.reset();
     form.querySelectorAll('.form-group.invalid').forEach((g) => g.classList.remove('invalid'));
+});
+
+
+
+
+function openTermsPopup(e) {
+    e.preventDefault(); 
+    termsPopup.classList.add('active');
+    
+    // Reset scroll position to the top whenever opened
+    termsScrollArea.scrollTop = 0;
+    
+    // Check instantly if the text is short or screen is large enough that no scroll is needed
+    checkScrollStatus();
+}
+
+termsCheckbox.addEventListener('click', openTermsPopup);
+if (termsTextSpan) {
+    termsTextSpan.addEventListener('click', openTermsPopup);
+}
+
+function closeTermsPopup() {
+    termsPopup.classList.remove('active');
+}
+
+termsCloseBtn.addEventListener('click', closeTermsPopup);
+
+acceptTermsBtn.addEventListener('click', () => {
+    termsCheckbox.checked = true; 
+    validateTerms(); 
+    closeTermsPopup();
+});
+
+notAcceptTermsBtn.addEventListener('click', () => {
+    termsCheckbox.checked = false; 
+    validateTerms(); 
+    closeTermsPopup(); 
 });
