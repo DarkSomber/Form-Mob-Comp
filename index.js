@@ -280,6 +280,23 @@ form.addEventListener('submit', (e) => {
 
 
 
+function checkScrollStatus() {
+    // If the content doesn't overflow, there's nothing to scroll through,
+    // so unlock the buttons immediately.
+    const isScrollable = termsScrollArea.scrollHeight > termsScrollArea.clientHeight + 1;
+    acceptTermsBtn.disabled = isScrollable;
+    notAcceptTermsBtn.disabled = isScrollable;
+}
+
+termsScrollArea.addEventListener('scroll', () => {
+    const reachedBottom =
+        termsScrollArea.scrollTop + termsScrollArea.clientHeight >= termsScrollArea.scrollHeight - 2;
+    if (reachedBottom) {
+        acceptTermsBtn.disabled = false;
+        notAcceptTermsBtn.disabled = false;
+    }
+});
+
 function openTermsPopup(e) {
     e.preventDefault(); 
     termsPopup.classList.add('active');
